@@ -3,7 +3,7 @@ from xml.etree import ElementTree
 
 ##### global
 xmlFD = -1
-BooksDoc = None
+CountrysDoc = None
 
 #### xml 관련 함수 구현
 def LoadXMLFromFile():
@@ -31,23 +31,87 @@ def PrintDOMtoXML():
     if checkDocument():
         print(BooksDoc.toxml())
 
-def PrintBookList(tags):
-    global BooksDoc
+def SortToGround(): #땅크기정
+    global CountrysDoc
+    retlist = []
+    namelist = []
+    strinfo = ''
+    count = 0
     if not checkDocument():
        return None
-        
-    booklist = BooksDoc.childNodes
-    book = booklist[0].childNodes
-    for item in book:
-        if item.nodeName == "book":
-            subitems = item.childNodes
-            for atom in subitems:
-               if atom.nodeName in tags:
-                   print("title=",atom.firstChild.nodeValue)
-                
+    try:
+        tree = ElementTree.fromstring(str(BooksDoc.toxml()))
+    except Exception:
+        print ("Element Tree parsing Error : maybe the xml document is not corrected.")
+        return None
+    countryElements = tree.getiterator("item")
+    
+    for item in countryElements:
+        strCountryEnglish = item.find("countryEnName")
+        strInfo = item.find("basic")
+        namelist.append(strCountryEnglish.text)
+        retlist.append(strInfo.text)
 
-def SearchCountryTitle(keyword):
-    global BooksDoc
+    strinfo = str(''.join(retlist))
+    sub = "면적 :"
+    buf = ''
+    sizeList = []
+    di = {}
+    #print('len = ',len(retlist))
+    #print(retlist[1]) 
+    for i in range(len(retlist)):
+        if retlist[i].find((sub)): #해당문자가 있으면
+            for j in range(len(retlist[i])):
+                if len(retlist[i])-1 == j:
+                    sizeList.append('')
+                    #print("끝일떄추가")
+                    break
+                if retlist[i][j] == '㎢':
+                    sizeList.append(buf)
+                    buf = ''
+                    #print("km 찾아서 추가")
+                    break
+                if retlist[i][j] == ',':
+                    continue
+                if retlist[i][j] == '면':
+                    if retlist[i][j+1] == '적':
+                        for z in range(30):
+                            if retlist[i][j+5+z] == ' ':
+                                continue
+                            if retlist[i][j+5+z] == ',':
+                                continue
+                            if 48 > ord(retlist[i][j+5+z]) :
+                                break
+                            if ord(retlist[i][j+5+z])>57:
+                                break
+                            buf += retlist[i][j+5+z]
+    #print(len(namelist))
+    #print(len(sizeList))
+    for i in range(len(namelist)):
+        print(namelist[i] ,'=', sizeList[i])
+    return namelist, sizeList
+
+def PrintCountryList(tags):
+    global CountrysDoc
+    count = 0
+    if not checkDocument():
+       return None
+
+    try:
+        tree = ElementTree.fromstring(str(BooksDoc.toxml()))
+    except Exception:
+        print ("Element Tree parsing Error : maybe the xml document is not corrected.")
+        return None
+    
+    countryElements = tree.getiterator("item")
+    for item in countryElements:
+        count+=1
+        strCountry = item.find("countryName")
+        print("Name = ",strCountry.text)
+    print(count)       
+
+def SearchCountryName(keyword):
+    global CountrysDoc
     retlist = []
     if not checkDocument():
         return None
@@ -59,11 +123,27 @@ def SearchCountryTitle(keyword):
         return None
     
     #get Book Element
-    bookElements = tree.getiterator("book")  # return list type
-    for item in bookElements:
-        strTitle = item.find("title")
-        if (strTitle.text.find(keyword) >=0 ):
-            retlist.append((item.attrib["ISBN"], strTitle.text))
+    countryElements = tree.getiterator("item")  # return list type
+    
+    for item in countryElements:
+        strCountry = item.find("countryName")
+        strCountryEnglish = item.find("countryEnName")
+        strInfo = item.find("basic")
+        #print(type(str(strCountryEnglish)))
+        strImageURL = item.find("imgUrl")
+        strContinent = item.find("continent")
+        if (strCountry.text.find(keyword) >=0 ):
+            retlist.append(strCountry.text)
+            retlist.append(strCountryEnglish.text)
+            retlist.append(strContinent.text)
+            retlist.append(strInfo.text)
+            retlist.append(strImageURL.text)
+            return retlist
+        
+    #for item in countryElements:
+    #    strCountry = item.find("countryName")
+    #    if (strCountry.text.find(keyword) >=0 ):
+    #        retlist.append((item.attrib["id"], strCountry.text))
     
     return retlist
 
