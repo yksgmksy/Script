@@ -1,8 +1,78 @@
 loopFlag = 1
 from internetcountry import *
+from country_ui import *
 
 sizelist =[]
 sortedDic = [()]*0
+
+class MyForm(QtGui.QMainWindow):
+    def __init__(self,parent=None):
+        QtGui.QWidget.__init__(self,parent)
+        self.ui = Ui_Form()
+        self.ui.setupUi(self)
+        self.list = []
+        self.buf = ""
+
+        self.item1 = "중동/아프리카"
+        self.item2 = "아시아/태평양"
+        self.item3 = "미주"
+        self.item4 = "유럽"
+        self.ui.comboBox.addItem(self.item1)
+        self.ui.comboBox.addItem(self.item2)
+        self.ui.comboBox.addItem(self.item3)
+        self.ui.comboBox.addItem(self.item4)
+    def slot1_click(self): # 프린트
+        self.ui.textEdit.clear()
+        self.list = PrintCountryList(["countryName",])
+        for i in self.list:
+            self.ui.textEdit.append(i)
+        self.list = []
+    def slot2_click(self): # 땅정렬
+        global sizelist,sortedDic
+        self.ui.textEdit.clear()
+        countrylist,groundlist = SortToGround()
+        
+        for i in range(len(countrylist)):
+            if groundlist[i] == '':
+                sizelist.append(float('0'))
+            if groundlist[i] != '':
+                sizelist.append(float(groundlist[i]))
+                sizelist[i] /= 1000
+                sortedDic.append((countrylist[i],sizelist[i])) 
+                
+        sortedDic.sort(key = lambda item:item[1])
+        for i in sortedDic:
+            self.buf = (str(i[0]) +' '+ '='+' '+str(i[1])+'㎢')
+            self.ui.textEdit.append(self.buf)
+            #print(i[0] ,'=',i[1] ,'㎢')
+        self.buf = ''   
+    def slot3_click(self): # 대륙별 나라
+        self.ui.textEdit.clear()
+        #self.ui.textEdit.append("----Continent List----\n1.중동/아프리카\n2.아시아/태평양\n3.미주\n4.유럽\n")   
+        if self.ui.comboBox.currentIndex() == 0:
+            self.list = ContinentNameList('1')
+        elif self.ui.comboBox.currentIndex() == 1:
+            self.list = ContinentNameList('2')
+        elif self.ui.comboBox.currentIndex() == 2:
+            self.list = ContinentNameList('3')
+        elif self.ui.comboBox.currentIndex() == 3:
+            self.list = ContinentNameList('4')
+        for i in self.list:
+            self.ui.textEdit.append(i)
+        self.list=[]
+    def slot4_click(self): # 나라검색
+        self.ui.textEdit.clear()
+        self.list = SearchCountryName(self.ui.lineEdit.text())
+        for i in self.list:
+            self.ui.textEdit.append(i)
+        self.list=[]
+    #여기서 이메일 연동하렴 우진아
+    def slot6_click(self): #Send 버튼을 눌렀을 때
+        #self.ui.lineEdit_2.Line함수 사용()   //이메일 주소
+        #self.ui.lineEdit_3.Line함수 사용()   //나라이름
+        pass
+    #여기까
+    
 #### Menu  implementation
 def printMenu():
     print("\nWelcome! Book Manager Program (xml version)")
@@ -72,9 +142,15 @@ def QuitBookMgr():
     
 ##### run #####
 LoadXMLFromFile()
-while(loopFlag > 0):
-    printMenu()
-    menuKey = str(input ('select menu :'))
-    launcherFunction(menuKey)
-else:
-    print ("Thank you! Good Bye")
+
+app = QtGui.QApplication(sys.argv)
+myapp = MyForm()
+myapp.show()
+app.exec_()
+#while(loopFlag > 0):
+    #printMenu()
+    #menuKey = str(input ('select menu :'))
+    #launcherFunction(menuKey)
+#    loopFlag = 0
+#else:
+#    print ("Thank you! Good Bye")
