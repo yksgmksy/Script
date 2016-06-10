@@ -53,42 +53,60 @@ def SortToGround(): #땅크기정
         retlist.append(strInfo.text)
 
     strinfo = str(''.join(retlist))
-    sub = "면적 :"
+    sub = "면"
     buf = ''
     sizeList = []
     di = {}
+    isNotEmpty = False
     #print('len = ',len(retlist))
     #print(retlist[1]) 
     for i in range(len(retlist)):
         if retlist[i].find((sub)): #해당문자가 있으면
+            isNotEmpty = False
             for j in range(len(retlist[i])):
                 if len(retlist[i])-1 == j:
                     sizeList.append('')
                     #print("끝일떄추가")
                     break
-                if retlist[i][j] == '㎢':
+                if retlist[i][j] == ' ':
+                    continue
+                if (retlist[i][j] == '㎢' or retlist[i][j] == 'K' or\
+                   retlist[i][j] == 'k' or retlist[i][j] == '제' or \
+                   retlist[i][j] == '평') and isNotEmpty == True:
+                    buf += '000'
                     sizeList.append(buf)
                     buf = ''
-                    #print("km 찾아서 추가")
+                    break
+                if retlist[i][j] == '㎡':
+                    sizeList.append(buf)
+                    buf = ''
                     break
                 if retlist[i][j] == ',':
                     continue
                 if retlist[i][j] == '면':
-                    if retlist[i][j+1] == '적':
-                        for z in range(30):
-                            if retlist[i][j+5+z] == ' ':
-                                continue
-                            if retlist[i][j+5+z] == ',':
-                                continue
-                            if 48 > ord(retlist[i][j+5+z]) :
-                                break
-                            if ord(retlist[i][j+5+z])>57:
-                                break
-                            buf += retlist[i][j+5+z]
+                    for z in range(30):
+                        if retlist[i][j+z] == '적' or retlist[i][j+z] == ' ' or \
+                           retlist[i][j+z] == ',' or retlist[i][j+z] == '약' or\
+                           retlist[i][j+z] == ':':
+                            continue
+                        if retlist[i][j+z] == '만' :
+                            buf += '0000'
+                            break
+                        if retlist[i][j+z] == '제' or retlist[i][j+z] == '㎢' or\
+                           retlist[i][j+z] == 'K' or retlist[i][j+z] == 'k' or\
+                           retlist[i][j+z] == '.' or retlist[i][j+z] == '평':
+                            break
+                        if 48 > ord(retlist[i][j+z]) :
+                            continue
+                        if ord(retlist[i][j+z])>57:
+                            continue
+                        buf += retlist[i][j+z]
+                        isNotEmpty = True
+                    
     #print(len(namelist))
     #print(len(sizeList))
-    for i in range(len(namelist)):
-        print(namelist[i] ,'=', sizeList[i])
+    #for i in range(len(namelist)):
+    #    print(namelist[i] ,'=', sizeList[i])
     return namelist, sizeList
 
 def PrintCountryList(tags):

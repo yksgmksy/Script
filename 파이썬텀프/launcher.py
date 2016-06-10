@@ -1,11 +1,13 @@
 loopFlag = 1
 from internetcountry import *
 
+sizelist =[]
+sortedDic = [()]*0
 #### Menu  implementation
 def printMenu():
     print("\nWelcome! Book Manager Program (xml version)")
     print("========Menu==========")
-    print("Load xml:  l")
+    #print("Load xml:  l")
     print("Print dom to xml: p")
     print("Quit program:   q")
     print("print Book list: b")
@@ -14,9 +16,9 @@ def printMenu():
     print("SortByGround: s")
     #print("Make html: m")
     print("----------------------------------------")
-    print("Get book data from isbn: g")
+    #print("Get book data from isbn: g")
     print("send maIl : i")
-    print("sTart Web Service: t")
+    #print("sTart Web Service: t")
     print("========Menu==========")
     
 def launcherFunction(menu):
@@ -43,8 +45,20 @@ def launcherFunction(menu):
         print(html)
         print("-----------------------")
     elif menu == 's':
-        #countrylist,groundlist = SortToGround()
-        SortToGround()
+        global sizelist,sortedDic
+        countrylist,groundlist = SortToGround()
+        
+        for i in range(len(countrylist)):
+            if groundlist[i] == '':
+                sizelist.append(float('0'))
+            if groundlist[i] != '':
+                sizelist.append(float(groundlist[i]))
+                sizelist[i] /= 1000
+                sortedDic.append((countrylist[i],sizelist[i])) 
+                
+        sortedDic.sort(key = lambda item:item[1])
+        for i in sortedDic:
+            print(i[0] ,'=',i[1] ,'㎢')
         
     elif menu == 'i':
         sendMain()
@@ -59,6 +73,7 @@ def QuitBookMgr():
     BooksFree()
     
 ##### run #####
+LoadXMLFromFile()
 while(loopFlag > 0):
     printMenu()
     menuKey = str(input ('select menu :'))
