@@ -165,6 +165,33 @@ def SearchCountryName(keyword):
     
     return retlist
 
+def ContinentNameList(keyword):
+    global CountrysDoc
+    namelist = []
+    if not checkDocument():
+        return None
+        
+    try:
+        tree = ElementTree.fromstring(str(BooksDoc.toxml()))
+    except Exception:
+        print ("Element Tree parsing Error : maybe the xml document is not corrected.")
+        return None
+    
+    countryElements = tree.getiterator("item")  # return list type
+    for item in countryElements:
+        strContinent = item.find("continent")
+        strCountryName = item.find("countryEnName")
+        if (keyword == '1' and strContinent.text == '중동/아프리카'):
+            namelist.append(strCountryName.text)
+        if (keyword == '2' and strContinent.text == '아시아/태평양'):
+            namelist.append(strCountryName.text)
+        if (keyword == '3' and strContinent.text == '미주'):
+            namelist.append(strCountryName.text)
+        if (keyword == '4' and strContinent.text == '유럽'):
+            namelist.append(strCountryName.text)
+            
+    return namelist
+
 def MakeHtmlDoc(BookList):
     from xml.dom.minidom import getDOMImplementation
     #get Dom Implementation

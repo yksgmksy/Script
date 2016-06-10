@@ -8,12 +8,13 @@ def printMenu():
     print("\nWelcome! Book Manager Program (xml version)")
     print("========Menu==========")
     #print("Load xml:  l")
-    print("Print dom to xml: p")
+    #print("Print dom to xml: p")
     print("Quit program:   q")
-    print("print Book list: b")
+    print("print Country list: b")
     #print("Add new book: a")
     print("SearchCountry Title: e")
     print("SortByGround: s")
+    print("ContinentList: w")
     #print("Make html: m")
     print("----------------------------------------")
     #print("Get book data from isbn: g")
@@ -22,12 +23,8 @@ def printMenu():
     print("========Menu==========")
     
 def launcherFunction(menu):
-    if menu ==  'l':
-        LoadXMLFromFile()
-    elif menu == 'q':
+    if menu == 'q':
         QuitBookMgr()
-    elif menu == 'p':
-        PrintDOMtoXML()
     elif menu == 'b':
         PrintCountryList(["countryName",])
     elif menu == 'e':
@@ -38,12 +35,13 @@ def launcherFunction(menu):
         #isbn = '0596513984'
         ret = getBookDataFromISBN(isbn)
         AddBook(ret)
-    elif menu == 'm':
-        keyword = str(input ('input keyword code to the html  :'))
-        html = MakeHtmlDoc(SearchBookTitle(keyword))
-        print("-----------------------")
-        print(html)
-        print("-----------------------")
+    elif menu == 'w':
+        print("----Continent List----\n","1.중동/아프리카\n"\
+              ,"2.아시아/태평양\n","3.미주\n","4.유럽\n")
+        keyword = str(input ('input number :'))
+        continentList = ContinentNameList(keyword)
+        for i in continentList:
+            print(i)
     elif menu == 's':
         global sizelist,sortedDic
         countrylist,groundlist = SortToGround()
@@ -62,8 +60,8 @@ def launcherFunction(menu):
         
     elif menu == 'i':
         sendMain()
-    elif menu == "t":
-        startWebService()
+    #elif menu == "t":
+    #    startWebService()
     else:
         print ("error : unknow menu key")
 
