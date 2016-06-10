@@ -4,6 +4,8 @@ from country_ui import *
 
 sizelist =[]
 sortedDic = [()]*0
+host = "smtp.gmail.com" # Gmail SMTP 서버 주소.
+port = "587"
 
 class MyForm(QtGui.QMainWindow):
     def __init__(self,parent=None):
@@ -31,7 +33,7 @@ class MyForm(QtGui.QMainWindow):
         global sizelist,sortedDic
         self.ui.textEdit.clear()
         countrylist,groundlist = SortToGround()
-        
+    
         for i in range(len(countrylist)):
             if groundlist[i] == '':
                 sizelist.append(float('0'))
@@ -68,9 +70,58 @@ class MyForm(QtGui.QMainWindow):
         self.list=[]
     #여기서 이메일 연동하렴 우진아
     def slot6_click(self): #Send 버튼을 눌렀을 때
-        #self.ui.lineEdit_2.Line함수 사용()   //이메일 주소
+        self.ui.textEdit.clear()
+        self.ID = self.ui.lineEdit_2.text()
+         #함수 사용()   //이메일 주소
+        self.message = 'Mail sending complete!!!'
+        self.list = self.ui.lineEdit_3.text()
+        global host, port
+        html = ""
+        title = 'countryName'
+        senderAddr = 'swj1718@gmail.com'
+        recipientAddr = self.ID 
+        msgtext = 'countryName'
+        passwd = 'tlsdnwls3739'
+        msgtext = 'y'
+        if msgtext == 'y' :
+            keyword = self.list 
+            html = MakeHtmlDoc(SearchCountryName(keyword))
+    
+        import mysmtplib
+    # MIMEMultipart의 MIME을 생성합니다.
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+    
+    #Message container를 생성합니다.
+        msg = MIMEMultipart('alternative')
+
+    #set message
+        msg['Subject'] = title
+        msg['From'] = senderAddr
+        msg['To'] = recipientAddr
+    
+        msgPart = MIMEText(msgtext, 'plain')
+        bookPart = MIMEText(html, 'html', _charset = 'UTF-8')
+    
+    # 메세지에 생성한 MIME 문서를 첨부합니다.
+        msg.attach(msgPart)
+        msg.attach(bookPart)
+    
+        print ("connect smtp server ... ")
+        s = mysmtplib.MySMTP(host,port)
+    #s.set_debuglevel(1)
+        s.ehlo()
+        s.starttls()
+        s.ehlo()
+        s.login(senderAddr, passwd)    # 로긴을 합니다. 
+        s.sendmail(senderAddr , [recipientAddr], msg.as_string())
+        s.close()
+    
+        print ("Mail sending complete!!!")  
+        self.ui.textEdit.append(self.message)
+        self.list=[]
         #self.ui.lineEdit_3.Line함수 사용()   //나라이름
-        pass
+        #pass
     #여기까
     
 #### Menu  implementation
