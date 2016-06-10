@@ -209,26 +209,12 @@ def MakeHtmlDoc(BookList):
         #create bold element
         b = newdoc.createElement('b')
         #create text node
-        ibsnText = newdoc.createTextNode("ISBN:" + bookitem[0])
+        ibsnText = newdoc.createTextNode(bookitem)
         b.appendChild(ibsnText)
 
         body.appendChild(b)
     
-        # BR 태그 (엘리먼트) 생성.
-        br = newdoc.createElement('br')
-
-        body.appendChild(br)
-
-        #create title Element
-        p = newdoc.createElement('p')
-        #create text node
-        titleText= newdoc.createTextNode("Title:" + bookitem[1])
-        p.appendChild(titleText)
-
-        body.appendChild(p)
-        body.appendChild(br)  #line end
-         
-    #append Body
+     
     top_element.appendChild(body)
     
     return newdoc.toxml()
