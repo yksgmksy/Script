@@ -126,7 +126,7 @@ def PrintCountryList(tags):
     for item in countryElements:
         count+=1
         strCountry = item.find("countryName")
-        print("Name = ",strCountry.text)
+        #print("Name = ",strCountry.text)
         retlist.append(strCountry.text)
     return retlist       
 
